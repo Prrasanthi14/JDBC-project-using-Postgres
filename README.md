@@ -1,83 +1,32 @@
 #### 1. Create DB, permissions etc.
 
-#Write a SQL script that creates a new user, and database. Make the user the owner of the db.
-
 ----->creating a database
 
-!!!Note: A new database can be created from an existing database user only. Here created the database dummydb from postgres root user.!!!
-postgres=# create database dummydb;
+!!!Note: A new database can be created from an existing database user only. Here created the database iplproject from postgres root user.!!!
+
+postgres=# create database iplproject;
 CREATE DATABASE
-postgres=# \l
-                             List of databases
-    Name    |  Owner   | Encoding | Collate | Ctype |   Access privileges   
-------------+----------+----------+---------+-------+-----------------------
- dummydb    | postgres | UTF8     | en_IN   | en_IN | 
- iplproject | postgres | UTF8     | en_IN   | en_IN | =Tc/postgres         +
-            |          |          |         |       | postgres=CTc/postgres+
-            |          |          |         |       | prrasanv=CTc/postgres
- postgres   | postgres | UTF8     | en_IN   | en_IN | 
- 
- 
- 
- 
- ---->creating a new user
-!!!Note: A new user can be created from an existing database only. Here created the user prrasanthi inside dummydb database.!!!
 
-postgres=# \c dummydb
-You are now connected to database "dummydb" as user "postgres".
+ 
+--->creating a new user
+!!!Note: A new user can be created from an existing database only. Here created the user prrasanthi inside iplproject database.!!!
+
+postgres=# \c iplproject
+You are now connected to database "iplproject" as user "postgres".
 dummydb=# create user prrasanthi with password 'prrasanthi';
-CREATE ROLE
-dummydb=# \du
-                                    List of roles
- Role name  |                         Attributes                         | Member of 
-------------+------------------------------------------------------------+-----------
- dummy      |                                                            | {}
- postgres   | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
- prrasanthi |                                                            | {}
- prrasanv   |                                                            | {}
 
 
--->Making the user owner of the DB
+--->Making the user owner of the DB
 
-dummydb=# ALTER DATABASE dummydb OWNER TO prrasanthi;
+dummydb=# ALTER DATABASE iplproject OWNER TO prrasanthi;
 ALTER DATABASE
 
 dummydb=# \l
-                              List of databases
-    Name    |   Owner    | Encoding | Collate | Ctype |   Access privileges   
-------------+------------+----------+---------+-------+-----------------------
- dummydb    | prrasanthi | UTF8     | en_IN   | en_IN | 
- iplproject | prrasanv   | UTF8     | en_IN   | en_IN | =Tc/prrasanv         +
-            |            |          |         |       | prrasanv=CTc/prrasanv
- postgres   | postgres   | UTF8     | en_IN   | en_IN | 
- template0  | postgres   | UTF8     | en_IN   | en_IN | =c/postgres          +
-            |            |          |         |       | postgres=CTc/postgres
- template1  | postgres   | UTF8     | en_IN   | en_IN | =c/postgres          +
-            |            |          |         |       | postgres=CTc/postgres
 
 
-#### 2. Clean up script
+#### 2. Load CSV
 
-#Write another SQL script that cleans up the user, and database created in the previous step.
-
-!!NOTE:One cannot drop a user while still being the assigned to a database
-
-EG:
-dummydb=# DROP USER prrasanthi;
-ERROR:  role "prrasanthi" cannot be dropped because some objects depend on it
-DETAIL:  owner of database dummydb 
-
-So need to change the owner of the DB and then drop it
-
-dummydb=# ALTER DATABASE dummydb OWNER TO postgres;
-ALTER DATABASE
-dummydb=# drop user prrasanthi;
-DROP ROLE
-
-
-
-#### 3. Load CSV
-#Write a SQL script that loads CSV data into a table.
+-->Provide the columns schema to the tables
 
 iplproject=#create table matches (id int,
                      season int,
@@ -121,12 +70,13 @@ iplproject=#create table deliveries (match_id int,
                         fielder varchar(200));
 
 
+-->Upload the csv data file to the table
+
 iplproject=# COPY matches FROM '/home/prasanthi/Desktop/IPL_Project/matches.csv' DELIMITER ',' CSV HEADER;
 iplproject=# COPY deliveries FROM '/home/prasanthi/Desktop/IPL_Project/deliveries.csv' DELIMITER ',' CSV HEADER;
 
 
-#### 4. Solve the IPL problems
-In a SQL file write queries that will solve the problems of the IPL data set, but this time with SQL. You can copy paste the queries in a .sql file and submit.
+#### 3. Solving the IPL problems
 
 ##### 1. Number of matches played per year of all the years in IPL. 
 -->select season,count(*)as years_count from matches group by season;
